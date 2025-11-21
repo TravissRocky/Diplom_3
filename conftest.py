@@ -85,14 +85,9 @@ def driver(browser_name: str):
 
 
 @pytest.fixture
-def base_url() -> str:
-    return BASE_URL
-
-
-@pytest.fixture
-def authorized_user(driver, base_url, api_user):
+def authorized_user(driver, api_user):
     main_page = MainPage(driver)
-    main_page.open(base_url)
+    main_page.open(BASE_URL)
     main_page.click_login_button()
     login_page = LoginPage(driver)
     login_page.wait_until_loaded()

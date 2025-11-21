@@ -4,6 +4,7 @@ import allure
 import pytest
 from selenium.webdriver.support.ui import WebDriverWait
 
+from data.urls import BASE_URL
 from helpers.api_client import StellarApiClient
 from locators.account_page_locators import AccountPageLocators
 from pages.account_page import AccountPage
@@ -24,9 +25,9 @@ def _create_order(api_client: StellarApiClient, ingredient_set, access_token: st
 @allure.feature('Лента заказов')
 @pytest.mark.feed
 class TestFeed:
-    def test_order_card_has_details_modal(self, driver, base_url):
+    def test_order_card_has_details_modal(self, driver):
         main_page = MainPage(driver)
-        main_page.open(base_url)
+        main_page.open(BASE_URL)
         main_page.open_feed()
         feed_page = FeedPage(driver)
         feed_page.wait_until_loaded()
@@ -39,7 +40,6 @@ class TestFeed:
     def test_user_history_order_visible_in_feed(
         self,
         driver,
-        base_url,
         authorized_user,
         api_client,
         default_ingredient_set,
@@ -63,12 +63,11 @@ class TestFeed:
     def test_total_counters_increase_after_new_order(
         self,
         driver,
-        base_url,
         api_client,
         api_user,
         default_ingredient_set,
     ):
-        driver.get(f"{base_url}/feed")
+        driver.get(f"{BASE_URL}/feed")
         feed_page = FeedPage(driver)
         feed_page.wait_until_loaded()
         total_before = feed_page.get_total_count()
@@ -92,12 +91,11 @@ class TestFeed:
     def test_new_order_appears_in_progress_list(
         self,
         driver,
-        base_url,
         api_client,
         api_user,
         default_ingredient_set,
     ):
-        driver.get(f"{base_url}/feed")
+        driver.get(f"{BASE_URL}/feed")
         feed_page = FeedPage(driver)
         feed_page.wait_until_loaded()
         order_number = _create_order(api_client, default_ingredient_set, api_user['accessToken'])

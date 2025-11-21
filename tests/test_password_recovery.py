@@ -2,6 +2,7 @@ import allure
 import pytest
 from selenium.webdriver.support.ui import WebDriverWait
 
+from data.urls import BASE_URL
 from pages.login_page import LoginPage
 from pages.main_page import MainPage
 from pages.password_recovery_page import PasswordRecoveryPage, PasswordResetPage
@@ -10,9 +11,9 @@ from pages.password_recovery_page import PasswordRecoveryPage, PasswordResetPage
 @allure.feature('Восстановление пароля')
 @pytest.mark.password_recovery
 class TestPasswordRecovery:
-    def test_open_recovery_page(self, driver, base_url):
+    def test_open_recovery_page(self, driver):
         main_page = MainPage(driver)
-        main_page.open(base_url)
+        main_page.open(BASE_URL)
         main_page.click_login_button()
 
         login_page = LoginPage(driver)
@@ -23,9 +24,9 @@ class TestPasswordRecovery:
         recovery_page.wait_until_loaded()
         assert 'forgot-password' in driver.current_url
 
-    def test_submit_recovery_email_redirects_to_reset(self, driver, base_url, api_user):
+    def test_submit_recovery_email_redirects_to_reset(self, driver, api_user):
         main_page = MainPage(driver)
-        main_page.open(base_url)
+        main_page.open(BASE_URL)
         main_page.click_login_button()
 
         login_page = LoginPage(driver)
@@ -38,9 +39,9 @@ class TestPasswordRecovery:
 
         WebDriverWait(driver, 10).until(lambda d: 'reset-password' in d.current_url)
 
-    def test_password_field_highlighted_after_toggle(self, driver, base_url):
+    def test_password_field_highlighted_after_toggle(self, driver):
         main_page = MainPage(driver)
-        main_page.open(base_url)
+        main_page.open(BASE_URL)
         main_page.click_login_button()
 
         login_page = LoginPage(driver)
