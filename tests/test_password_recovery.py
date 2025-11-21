@@ -1,6 +1,5 @@
 import allure
 import pytest
-from selenium.webdriver.support.ui import WebDriverWait
 
 from data.urls import BASE_URL
 from pages.login_page import LoginPage
@@ -22,7 +21,7 @@ class TestPasswordRecovery:
 
         recovery_page = PasswordRecoveryPage(driver)
         recovery_page.wait_until_loaded()
-        assert 'forgot-password' in driver.current_url
+        assert recovery_page.url_contains('forgot-password')
 
     def test_submit_recovery_email_redirects_to_reset(self, driver, api_user):
         main_page = MainPage(driver)
@@ -36,8 +35,7 @@ class TestPasswordRecovery:
         recovery_page = PasswordRecoveryPage(driver)
         recovery_page.wait_until_loaded()
         recovery_page.submit_email(api_user['email'])
-
-        WebDriverWait(driver, 10).until(lambda d: 'reset-password' in d.current_url)
+        recovery_page.wait_for_url_contains('reset-password')
 
     def test_password_field_highlighted_after_toggle(self, driver):
         main_page = MainPage(driver)

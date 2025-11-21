@@ -59,3 +59,18 @@ class BasePage:
 
     def get_element(self, locator: Tuple[str, str]):
         return self.wait.until(EC.presence_of_element_located(locator))
+
+    def get_current_url(self) -> str:
+        return self.driver.current_url
+
+    def url_contains(self, text: str) -> bool:
+        return text in self.driver.current_url
+
+    def wait_for_url_contains(self, text: str, timeout: int = 10) -> None:
+        WebDriverWait(self.driver, timeout).until(EC.url_contains(text))
+
+    def refresh_page(self) -> None:
+        self.driver.refresh()
+
+    def go_back(self) -> None:
+        self.driver.back()

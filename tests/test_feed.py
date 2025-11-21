@@ -2,11 +2,9 @@ import time
 
 import allure
 import pytest
-from selenium.webdriver.support.ui import WebDriverWait
 
 from data.urls import BASE_URL
 from helpers.api_client import StellarApiClient
-from locators.account_page_locators import AccountPageLocators
 from pages.account_page import AccountPage
 from pages.feed_page import FeedPage
 from pages.main_page import MainPage
@@ -34,8 +32,8 @@ class TestFeed:
         if feed_page.open_first_order_modal():
             feed_page.close_modal()
         else:
-            assert "/feed/" in driver.current_url
-            driver.back()
+            assert feed_page.url_contains("/feed/")
+            feed_page.go_back()
 
     def test_user_history_order_visible_in_feed(
         self,
@@ -50,10 +48,7 @@ class TestFeed:
         main_page.open_personal_account()
         account_page = AccountPage(driver)
         account_page.open_order_history()
-
-        WebDriverWait(driver, 20).until(
-            lambda d: any(order_number in el.text for el in d.find_elements(*AccountPageLocators.ORDER_CARD_NUMBER))
-        )
+        account_page.wait_for_order_in_history(order_number)
 
         main_page.open_feed()
         feed_page = FeedPage(driver)
@@ -67,16 +62,15 @@ class TestFeed:
         api_user,
         default_ingredient_set,
     ):
-        driver.get(f"{BASE_URL}/feed")
         feed_page = FeedPage(driver)
-        feed_page.wait_until_loaded()
+        feed_page.open(BASE_URL)
         total_before = feed_page.get_total_count()
         today_before = feed_page.get_today_count()
 
         order_number = _create_order(api_client, default_ingredient_set, api_user['accessToken'])
 
         for _ in range(30):
-            driver.refresh()
+            feed_page.refresh_page()
             feed_page.wait_until_loaded()
             total_after = feed_page.get_total_count()
             today_after = feed_page.get_today_count()
@@ -95,12 +89,11 @@ class TestFeed:
         api_user,
         default_ingredient_set,
     ):
-        driver.get(f"{BASE_URL}/feed")
         feed_page = FeedPage(driver)
-        feed_page.wait_until_loaded()
+        feed_page.open(BASE_URL)
         order_number = _create_order(api_client, default_ingredient_set, api_user['accessToken'])
         for _ in range(30):
-            driver.refresh()
+            feed_page.refresh_page()
             feed_page.wait_until_loaded()
             if feed_page.is_order_in_progress(order_number):
                 return

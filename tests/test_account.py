@@ -11,7 +11,7 @@ class TestPersonalAccount:
     def test_open_personal_account(self, driver, authorized_user):
         main_page = MainPage(driver)
         main_page.open_personal_account()
-        assert '/account' in driver.current_url
+        assert main_page.url_contains('/account')
 
     def test_open_order_history(self, driver, authorized_user):
         main_page = MainPage(driver)
@@ -19,7 +19,7 @@ class TestPersonalAccount:
 
         account_page = AccountPage(driver)
         account_page.open_order_history()
-        assert 'order-history' in driver.current_url
+        assert account_page.url_contains('order-history')
 
     def test_logout_from_account(self, driver, authorized_user):
         main_page = MainPage(driver)
@@ -27,4 +27,4 @@ class TestPersonalAccount:
 
         account_page = AccountPage(driver)
         account_page.logout()
-        assert '/login' in driver.current_url
+        assert account_page.url_contains('/login')

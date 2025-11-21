@@ -25,3 +25,9 @@ class AccountPage(BasePage):
         if not order_numbers:
             raise AssertionError('Order history is empty')
         return order_numbers[0].text
+
+    @allure.step('Дождаться появления заказа {order_number} в истории')
+    def wait_for_order_in_history(self, order_number: str, timeout: int = 20) -> None:
+        WebDriverWait(self.driver, timeout).until(
+            lambda d: any(order_number in el.text for el in d.find_elements(*AccountPageLocators.ORDER_CARD_NUMBER))
+        )

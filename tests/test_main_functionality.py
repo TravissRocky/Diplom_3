@@ -10,16 +10,16 @@ from pages.main_page import MainPage
 @pytest.mark.main_functionality
 class TestMainFunctionality:
     def test_navigate_constructor_from_feed(self, driver):
-        driver.get(f"{BASE_URL}/feed")
         main_page = MainPage(driver)
+        main_page.open(f"{BASE_URL}/feed")
         main_page.open_constructor()
-        assert driver.current_url.rstrip('/') == BASE_URL.rstrip('/')
+        assert main_page.get_current_url().rstrip('/') == BASE_URL.rstrip('/')
 
     def test_navigate_to_feed(self, driver):
         main_page = MainPage(driver)
         main_page.open(BASE_URL)
         main_page.open_feed()
-        assert '/feed' in driver.current_url
+        assert main_page.url_contains('/feed')
 
     def test_ingredient_modal_open_and_close(self, driver):
         main_page = MainPage(driver)

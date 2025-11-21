@@ -10,6 +10,11 @@ from pages.base_page import BasePage
 
 
 class FeedPage(BasePage):
+    @allure.step('Открыть страницу ленты заказов')
+    def open(self, base_url: str) -> None:  # type: ignore[override]
+        super().open(f"{base_url}/feed")
+        self.wait_until_loaded()
+
     @allure.step('Дождаться загрузки страницы ленты заказов')
     def wait_until_loaded(self) -> None:
         self.wait_for_visible(FeedPageLocators.PAGE_TITLE)
@@ -56,7 +61,7 @@ class FeedPage(BasePage):
         for _ in range(timeout):
             if self.is_order_present(number):
                 return
-            self.driver.refresh()
+            self.refresh_page()
             self.wait_until_loaded()
         raise AssertionError(f'Order {number} not found in feed')
 
