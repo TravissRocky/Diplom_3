@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Optional
 
+import allure
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -21,28 +22,35 @@ from pages.base_page import BasePage
 class MainPage(BasePage):
     OVERLAY_LOCATOR = (By.CSS_SELECTOR, "div[class*='Modal_modal_overlay']")
 
+    @allure.step('Открыть главную страницу')
     def open(self, base_url: str) -> None:  # type: ignore[override]
         super().open(base_url)
         self.wait_for_visible(MainPageLocators.CONSTRUCTOR_LINK)
         self.wait_overlay_gone()
 
+    @allure.step('Нажать кнопку входа в аккаунт')
     def click_login_button(self) -> None:
         self._click_with_overlay_guard(MainPageLocators.LOGIN_ACCOUNT_BUTTON)
 
+    @allure.step('Открыть личный кабинет')
     def open_personal_account(self) -> None:
         self._click_with_overlay_guard(MainPageLocators.PERSONAL_ACCOUNT_LINK)
 
+    @allure.step('Открыть конструктор')
     def open_constructor(self) -> None:
         self._click_with_overlay_guard(MainPageLocators.CONSTRUCTOR_LINK)
 
+    @allure.step('Открыть ленту заказов')
     def open_feed(self) -> None:
         self._click_with_overlay_guard(MainPageLocators.FEED_LINK)
 
+    @allure.step('Открыть модальное окно первого ингредиента')
     def open_first_ingredient_modal(self) -> None:
         ingredient = self.driver.find_elements(*MainPageLocators.INGREDIENT_CARDS)[0]
         ingredient.click()
         self.wait_for_visible(MainPageLocators.INGREDIENT_MODAL)
 
+    @allure.step('Открыть модальное окно ингредиента: {ingredient_name}')
     def open_ingredient_modal_by_name(self, ingredient_name: str) -> None:
         locator = (By.XPATH, f"//p[text()='{ingredient_name}']/ancestor::a")
         element = self.get_element(locator)
@@ -50,6 +58,7 @@ class MainPage(BasePage):
         element.click()
         self.wait_for_visible(MainPageLocators.INGREDIENT_MODAL)
 
+    @allure.step('Закрыть модальное окно ингредиента')
     def close_ingredient_modal(self) -> None:
         try:
             self.click(MainPageLocators.INGREDIENT_MODAL_CLOSE_BUTTON)
@@ -57,11 +66,13 @@ class MainPage(BasePage):
             close_button = self.get_element(MainPageLocators.INGREDIENT_MODAL_CLOSE_BUTTON)
             self.driver.execute_script("arguments[0].click();", close_button)
 
+    @allure.step('Добавить ингредиент в конструктор по индексу: {index}')
     def add_ingredient_to_constructor(self, index: int = 0) -> None:
         ingredient = self.driver.find_elements(*MainPageLocators.INGREDIENT_CARDS)[index]
         constructor = self.get_element(MainPageLocators.CONSTRUCTOR_DROP_AREA)
         self._drag_ingredient_to_constructor(ingredient, constructor)
 
+    @allure.step('Добавить ингредиент в конструктор: {ingredient_name}')
     def add_ingredient_by_name(self, ingredient_name: str) -> None:
         import time
         locator = (By.XPATH, f"//p[text()='{ingredient_name}']/ancestor::a")
@@ -72,6 +83,7 @@ class MainPage(BasePage):
         self._drag_ingredient_to_constructor(ingredient, constructor)
         time.sleep(0.5)  # Пауза после drag-and-drop для обновления счетчика
 
+    @allure.step('Получить значение счетчика ингредиента по индексу: {index}')
     def get_ingredient_counter_value(self, index: int = 0) -> int:
         ingredient = self.driver.find_elements(*MainPageLocators.INGREDIENT_CARDS)[index]
         counters = ingredient.find_elements(By.CSS_SELECTOR, "p[class*='counter__num']")
@@ -79,6 +91,7 @@ class MainPage(BasePage):
             return 0
         return int(counters[0].text)
 
+    @allure.step('Получить значение счетчика ингредиента: {ingredient_name}')
     def get_counter_by_name(self, ingredient_name: str) -> int:
         locator = (By.XPATH, f"//p[text()='{ingredient_name}']/ancestor::a")
         ingredient = self.get_element(locator)
@@ -87,18 +100,22 @@ class MainPage(BasePage):
             return 0
         return int(counters[0].text)
 
+    @allure.step('Дождаться значения счетчика {expected_value} для ингредиента: {ingredient_name}')
     def wait_for_counter_value(self, ingredient_name: str, expected_value: int, timeout: int = 15) -> None:
         WebDriverWait(self.driver, timeout).until(
             lambda _: self.get_counter_by_name(ingredient_name) == expected_value
         )
 
+    @allure.step('Оформить заказ')
     def submit_order(self) -> None:
         self._click_with_overlay_guard(MainPageLocators.ORDER_BUTTON)
 
+    @allure.step('Дождаться номера заказа')
     def wait_for_order_number(self) -> str:
         WebDriverWait(self.driver, 30).until(EC.visibility_of_element_located(MainPageLocators.ORDER_NUMBER_TITLE))
         return self.get_text(MainPageLocators.ORDER_NUMBER_TITLE)
 
+    @allure.step('Дождаться исчезновения overlay')
     def wait_overlay_gone(self, timeout: int = 10) -> None:
         try:
             WebDriverWait(self.driver, timeout).until(EC.invisibility_of_element_located(self.OVERLAY_LOCATOR))

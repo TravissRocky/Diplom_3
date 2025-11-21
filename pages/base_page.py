@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Tuple
 
+import allure
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -13,13 +14,16 @@ class BasePage:
         self.driver = driver
         self.wait = WebDriverWait(driver, timeout)
 
+    @allure.step('Открыть URL: {url}')
     def open(self, url: str) -> None:
         self.driver.get(url)
 
+    @allure.step('Кликнуть на элемент')
     def click(self, locator: Tuple[str, str]) -> None:
         element = self.wait.until(EC.element_to_be_clickable(locator))
         element.click()
 
+    @allure.step('Заполнить поле значением: {value}')
     def fill(self, locator: Tuple[str, str], value: str, clear: bool = True) -> None:
         element = self.wait.until(EC.visibility_of_element_located(locator))
         if clear:
