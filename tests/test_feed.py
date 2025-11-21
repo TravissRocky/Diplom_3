@@ -65,7 +65,7 @@ class TestFeed:
         driver,
         base_url,
         api_client,
-        test_user,
+        api_user,
         default_ingredient_set,
     ):
         driver.get(f"{base_url}/feed")
@@ -74,7 +74,7 @@ class TestFeed:
         total_before = feed_page.get_total_count()
         today_before = feed_page.get_today_count()
 
-        order_number = _create_order(api_client, default_ingredient_set, test_user['accessToken'])
+        order_number = _create_order(api_client, default_ingredient_set, api_user['accessToken'])
 
         for _ in range(30):
             driver.refresh()
@@ -94,13 +94,13 @@ class TestFeed:
         driver,
         base_url,
         api_client,
-        test_user,
+        api_user,
         default_ingredient_set,
     ):
         driver.get(f"{base_url}/feed")
         feed_page = FeedPage(driver)
         feed_page.wait_until_loaded()
-        order_number = _create_order(api_client, default_ingredient_set, test_user['accessToken'])
+        order_number = _create_order(api_client, default_ingredient_set, api_user['accessToken'])
         for _ in range(30):
             driver.refresh()
             feed_page.wait_until_loaded()

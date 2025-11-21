@@ -52,7 +52,7 @@ def default_ingredient_set(ingredient_catalog: List[Dict]) -> Dict[str, Dict]:
 
 
 @pytest.fixture(scope="function")
-def test_user(api_client: StellarApiClient) -> Dict:
+def api_user(api_client: StellarApiClient) -> Dict:
     creds = generate_user_credentials()
     api_client.create_user(**creds)
     tokens = api_client.login_user(creds["email"], creds["password"])
@@ -90,12 +90,12 @@ def base_url() -> str:
 
 
 @pytest.fixture
-def authorized_user(driver, base_url, test_user):
+def authorized_user(driver, base_url, api_user):
     main_page = MainPage(driver)
     main_page.open(base_url)
     main_page.click_login_button()
     login_page = LoginPage(driver)
     login_page.wait_until_loaded()
-    login_page.login(test_user["email"], test_user["password"])
+    login_page.login(api_user["email"], api_user["password"])
     main_page.wait_for_text(MainPageLocators.ORDER_BUTTON, "Оформить заказ")
-    return test_user
+    return api_user

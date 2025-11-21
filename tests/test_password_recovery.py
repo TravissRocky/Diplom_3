@@ -23,7 +23,7 @@ class TestPasswordRecovery:
         recovery_page.wait_until_loaded()
         assert 'forgot-password' in driver.current_url
 
-    def test_submit_recovery_email_redirects_to_reset(self, driver, base_url, test_user):
+    def test_submit_recovery_email_redirects_to_reset(self, driver, base_url, api_user):
         main_page = MainPage(driver)
         main_page.open(base_url)
         main_page.click_login_button()
@@ -34,7 +34,7 @@ class TestPasswordRecovery:
 
         recovery_page = PasswordRecoveryPage(driver)
         recovery_page.wait_until_loaded()
-        recovery_page.submit_email(test_user['email'])
+        recovery_page.submit_email(api_user['email'])
 
         WebDriverWait(driver, 10).until(lambda d: 'reset-password' in d.current_url)
 
